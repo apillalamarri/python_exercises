@@ -10,7 +10,6 @@
 # Making sandwich #2
 # All done; only had enough bread for 2 sandwiches.
 
-print "Goal #1: Write a new version of the PB&J program that uses a while loop.  Print 'Making sandwich #' and the number of the sandwich until you are out of bread, peanut butter, or jelly."
 SlicesOfBread1 = input("How many slices of bread? ")
 PeanutButter1 = input("How many sandwiches worth of peanut butter? ") 
 Jelly1 = input("How many sandwiches worth of jelly? ")
