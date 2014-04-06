@@ -15,13 +15,22 @@
 #       Shannon Turner took the survey! Here is her contact information: Twitter: @svt827 Github: @shannonturner Phone: 202-555-1234
 
 def csv_to_dict(csv_file, k):
+	"Takes a csv file (csv_file) and unique identifier (k) and returns a dictionary version of the file where the main keys are k"
 	lines = csv_file.read().split("\n")
-	headers = lines.pop(0).split(",")
+	for index, line in enumerate(lines):
+		lines[index] = line.split(",")
+		#Remove leading and trailing spaces from values
+		stripped = []
+		for item in lines[index]:
+			stripped.append(item.strip())
+		lines[index] = stripped	
+	#save the header row as a special list of its own - items in this list will be the sub-keys for the dictionary
+	headers = lines.pop(0)
+	#create the dictionary
 	dict = {}
 	for line in lines:
-		line_split = line.split(",")
 		single_line_dict = {}
-		for header, element in zip(headers, line_split):
+		for header, element in zip(headers, line):
 			single_line_dict[header] = element
 			dict[single_line_dict.get(k)] = single_line_dict
 	return dict
@@ -33,13 +42,12 @@ with open ("survey.csv", "r") as survey_file:
 	
 for email, info in survey_dict.iteritems():
 	for name, emp in emp_dict.iteritems():
-		print emp
-		print "\n"
-		#if email == emp.get('email'):
-		#	print "{0} took the survey! Here is her contact information: ".format(name),
-		#	for k, v in emp.iteritems():
-		#		print "{0}: {1}".format(k, v),
-		#	print "\n"
+		if email == emp.get('email'):
+			print "{0} took the survey! Here is her contact information: ".format(name)
+			for k, v in emp.iteritems():
+				print "{0}: {1}".format(k, v)
+			print "\n"
+			
 # Challenge 2: Add the extra information from survey.csv into all_employees.csv as extra columns.  
 # IMPORTANT: It would probably be a good idea to save it as an extra file instead of accidentally overwriting your original!
-# By the end, your all_employees.csv should contain the following columns: name, email, phone, department, position, twitter, github
+# By the end, your all_employees.csv should contain the following columns: name, email, phone, department, position, #twitter, github
