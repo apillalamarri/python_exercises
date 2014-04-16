@@ -75,17 +75,15 @@ with open ("appended_employees.csv", "w") as append_emp:
 					print "{0}: {1}".format(k, v)
 				print "\n"
 				single_emp_info = emp
-				single_emp_info["twitter"] = info["twitter"]
-				single_emp_info["github"] = info["github"]
-				#print "single_emp_info is ",
-				#print single_emp_info
+				single_emp_info["twitter"] = info.get("twitter")
+				single_emp_info["github"] = info.get("github")
 				append_emp_dict[name] = single_emp_info
+			else:
+				single_emp_info = emp
+				single_emp_info["twitter"] = ""
+				single_emp_info["github"] = ""
+				
 	append_emp.write(dict_to_csv(append_emp_dict))			
-				
-#print "append_emp_dict is "
-#print append_emp_dict
-				
-					
 
 			
 # Challenge 2: Add the extra information from survey.csv into all_employees.csv as extra columns.  
