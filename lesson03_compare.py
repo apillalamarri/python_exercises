@@ -26,70 +26,66 @@ def csv_to_dict(csv_file, k):
 		lines[index] = stripped	
 	#save the header row as a special list of its own - items in this list will be the sub-keys for the dictionary
 	headers = lines.pop(0)
+	#print "The headers are: ", headers
 	#create the dictionary
 	dict = {}
 	for line in lines:
 		single_line_dict = {}
+		#print zip(headers, line)
 		for header, element in zip(headers, line):
+			#print "header is {0} and element is {1}".format(header, element)
 			single_line_dict[header] = element
-			dict[single_line_dict.get(k)] = single_line_dict
+			#print single_line_dict
+		dict[single_line_dict.get(k)] = single_line_dict
 	return dict
 
-def dict_to_csv (dict):
-	"This is probably useless. It takes a dictionary and turns it into a csv but it assumes that the dictionary is ordered which of course it isn't."
+def dict_to_csv (dict, headers):
 	csv_string = ""
+	for header in headers:
+		csv_string +=(header+',')
+	csv_string +='\n'
 	for v in dict.itervalues():
-		header = ""
-		for sk in v.iterkeys():
-			header += sk
-			header += ","
-		header = header[:-1]+"\n"
-		for sv in v.itervalues():
-			csv_string+=(sv+',')
-		csv_string+=('\n')
-	csv_string = csv_string.replace(",\n","\n")
-	csv_string = header + csv_string
+		for header in headers:
+			csv_string += v.get(header)+','
+		csv_string +=('\n')
 	return csv_string
 	
-	
 with open ("all_employees.csv", "r") as all_employees_file:
-	emp_dict = csv_to_dict(all_employees_file, "name")
-#print "emp_dict is now:"
-#print emp_dict	
+	emp_dict = csv_to_dict(all_employees_file, "email")
+	#print "emp_dict is now:"
+	#print emp_dict
 
-with open ("survey.csv", "r") as survey_file:
-	with open ("appended_employees.csv", "w") as append_emp:
-		append_emp.write(survey_file.read())
-		
-with open ("survey.csv", "r") as survey_file_for_dict:	
+with open ("survey.csv", "r") as survey_file_for_dict:
 	survey_dict = csv_to_dict(survey_file_for_dict, "email")
+	#print "survey_dict is now:"
+	#print survey_dict
 	
 with open ("appended_employees.csv", "w") as append_emp:
 	append_emp_dict = {}
-	for email, info in survey_dict.iteritems():
+	for email, info in emp_dict.iteritems():
 		single_emp_info = {}
-		for name, emp in emp_dict.iteritems():
-			if email == emp.get('email'):
-				print "{0} took the survey! Here is her contact information: ".format(name)
-				for k, v in emp.iteritems():
-					print "{0}: {1}".format(k, v)
-				print "\n"
-				single_emp_info = emp
-				single_emp_info["twitter"] = info.get("twitter")
-				single_emp_info["github"] = info.get("github")
-				append_emp_dict[name] = single_emp_info
-			else:
-				single_emp_info = emp
-				single_emp_info["twitter"] = ""
-				single_emp_info["github"] = ""
-				
-	append_emp.write(dict_to_csv(append_emp_dict))			
-
-			
-# Challenge 2: Add the extra information from survey.csv into all_employees.csv as extra columns.  
-# IMPORTANT: It would probably be a good idea to save it as an extra file instead of accidentally overwriting your original!
-# By the end, your all_employees.csv should contain the following columns: name, email, phone, department, position, #twitter, github
-
-
-
-
+		if survey_dict.get(email):
+			print "{0} took the survey! Here is her contact information:".format(emp_dict.get(email).get("name"))
+			print "Twitter: {0}".format(survey_dict.get(email).get("twitter"))
+			print "Github: {0}".format(survey_dict.get(email).get("github"))
+			print "Phone: {0}".format(emp_dict.get(email).get("phone"))
+			single_emp_info["name"]=info.get("name")
+			single_emp_info["email"]=email
+			single_emp_info["phone"]=info.get("phone")
+			single_emp_info["department"]=info.get("department")
+			single_emp_info["position"]=info.get("position")
+			single_emp_info["twitter"]=survey_dict.get(email).get("twitter")
+			single_emp_info["github"]=survey_dict.get(email).get("github")
+		else:
+			single_emp_info["name"]=info.get("name")
+			single_emp_info["email"]=email
+			single_emp_info["phone"]=info.get("phone")
+			single_emp_info["department"]=info.get("department")
+			single_emp_info["position"]=info.get("position")
+			single_emp_info["twitter"]=""
+			single_emp_info["github"]=""
+		#print single_emp_info
+		append_emp_dict[email]=single_emp_info
+	#print append_emp_dict
+	headers = ['name', 'email', 'phone', 'department', 'position', 'twitter', 'github']		
+	append_emp.write(dict_to_csv(append_emp_dict, headers))
